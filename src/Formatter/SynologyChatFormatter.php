@@ -52,7 +52,7 @@ class SynologyChatFormatter extends NormalizerFormatter {
             $fills = array_merge($record['context'], $fills);
         }
 
-        $fills['message'] = "*".Str::ucfirst($record['level_name'])." * : `".$fills['description']."`";
+        $fills['message'] = "*".Str::ucfirst($record['level_name'])." * : ".$record['message']."";
         $fills['payload'] = '{"text":"'.$fills['message'].'"}';
 
         return $fills;

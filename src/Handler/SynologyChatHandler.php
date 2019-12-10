@@ -30,13 +30,11 @@ class SynologyChatHandler extends AbstractProcessingHandler {
         string $token,
         string $url,
         string $version = "2",
-        $level = Logger::CRITICAL
+        $level = Logger::ERROR
     ) {
 
-        $this->url = $url . "webapi/entry.cgi?api=SYNO.Chat.External&method=incoming&version=" . $version . "&token=" . $token;
+        $this->url = "https://". $url . "/webapi/entry.cgi?api=SYNO.Chat.External&method=incoming&version=" . $version . "&token=" . $token;
         $this->token = $token;
-
-        Log::info($this->url);
 
         parent::__construct($level);
 
@@ -44,17 +42,14 @@ class SynologyChatHandler extends AbstractProcessingHandler {
 
     protected function write(array $record) : void {
 
-        Log::info("beforeWrite");
-
         $formData =
             ['form_params' => [
-                "payload" => $record['payload'],
+                "payload" => $record['formatted']['payload'],
             ]];
 
         $client = new Client();
         $response = $client->request("POST", $this->url, $formData);
 
-        Log::info((string) $response->getBody());
 
     }
 
