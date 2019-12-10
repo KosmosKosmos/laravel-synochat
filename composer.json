@@ -1,0 +1,16 @@
+{
+    "name": "kosmoskosmos/synochat",
+    "description": "Synology Chat Support for Monolog and others",
+    "type": "library",
+    "require": {
+        "monolog/monolog": "^2.0"
+    },
+    "license": "MIT License",
+    "authors": [
+        {
+            "name": "Andreas Kosmowicz",
+            "email": "andreas@kosmoskosmos.de"
+        }
+    ],
+    "minimum-stability": "beta"
+}
