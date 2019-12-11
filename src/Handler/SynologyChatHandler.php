@@ -29,13 +29,13 @@ class SynologyChatHandler extends AbstractProcessingHandler {
     public function __construct(
         string $token,
         string $url,
-        string $version = "2",
-        $level = Logger::ERROR
+        $level = Logger::ERROR,
+        string $version = "2"
     ) {
 
         $this->url = "https://". $url . "/webapi/entry.cgi?api=SYNO.Chat.External&method=incoming&version=" . $version . "&token=" . $token;
         $this->token = $token;
-
+        Log::info($this->url);
         parent::__construct($level);
 
     }
@@ -50,6 +50,7 @@ class SynologyChatHandler extends AbstractProcessingHandler {
         $client = new Client();
         $response = $client->request("POST", $this->url, $formData);
 
+        //Log::info($response->getBody());
 
     }
 
