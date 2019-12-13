@@ -3,12 +3,15 @@
 
 namespace KosmosKosmos\SynoChat\Handler;
 
+use GuzzleHttp\Psr7\Uri;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use KosmosKosmos\SynoChat\Formatter\SynologyChatFormatter;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use GuzzleHttp\Client;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 /**
  * Sends notifications through Synology Chat API
@@ -33,9 +36,9 @@ class SynologyChatHandler extends AbstractProcessingHandler {
         string $version = "2"
     ) {
 
+
         $this->url = "https://". $url . "/webapi/entry.cgi?api=SYNO.Chat.External&method=incoming&version=" . $version . "&token=" . $token;
         $this->token = $token;
-        Log::info($this->url);
         parent::__construct($level);
 
     }
@@ -48,9 +51,12 @@ class SynologyChatHandler extends AbstractProcessingHandler {
             ]];
 
         $client = new Client();
-        $response = $client->request("POST", $this->url, $formData);
 
-        //Log::info($response->getBody());
+        if (filter_var($this->url, FILTER_VALIDATE_URL)) {
+            $response = $client->request("POST", $this->url, $formData);
+        } else {
+            Log::info("SynoChat enabled but no valid URL given.");
+        }
 
     }
 
