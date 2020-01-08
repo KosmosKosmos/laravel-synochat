@@ -3,15 +3,13 @@
 
 namespace KosmosKosmos\SynoChat\Handler;
 
-use GuzzleHttp\Psr7\Uri;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\URL;
 use KosmosKosmos\SynoChat\Formatter\SynologyChatFormatter;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\Logger;
 use GuzzleHttp\Client;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
 
 /**
  * Sends notifications through Synology Chat API
@@ -45,6 +43,11 @@ class SynologyChatHandler extends AbstractProcessingHandler {
 
     protected function write(array $record) : void {
 
+        if (Cache::has("synochat_chat_handler_paused_since")) {
+            Log::info("Won't connect to SynoChat API now, since we will risk to be blocked. Maybe we are already blocked. Message to be sent:\n".$record['formatted']['message']);
+            return;
+        }
+
         $formData =
             ['form_params' => [
                 "payload" => $record['formatted']['payload'],
@@ -53,7 +56,24 @@ class SynologyChatHandler extends AbstractProcessingHandler {
         $client = new Client();
 
         if (filter_var($this->url, FILTER_VALIDATE_URL)) {
-            $response = $client->request("POST", $this->url, $formData);
+            $clientResponse = $client->request("POST", $this->url, $formData);
+
+            if ($clientResponse->getStatusCode() !== 200) {
+                Log::info("Error ".$clientResponse->getStatusCode()." connecting to SynoChat API via ".$this->url.". Seems that the DiskStation is not available here.");
+            }
+
+            $responseBody = json_decode((string) $clientResponse->getBody());
+
+            if (!$responseBody->success) {
+                Log::info("Error ".$responseBody->error->code." connecting to SynoChat API : ".$responseBody->error->errors);
+                if (in_array($responseBody->error->code, [404, 105])) {
+                    Cache::put(
+                        "synochat_chat_handler_paused_since",
+                        date("Y-m-d H:i:s"),
+                        config("synochat.time_to_wait_before_retry_after_failed",60));
+                }
+            }
+
         } else {
             Log::info("SynoChat enabled but no valid URL given.");
         }

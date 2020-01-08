@@ -2,7 +2,6 @@
 
 namespace KosmosKosmos\SynoChat\Logging;
 
-use Illuminate\Support\Facades\Log;
 use KosmosKosmos\SynoChat\Handler\SynologyChatHandler;
 use Monolog\Logger;
 
