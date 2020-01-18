@@ -15,5 +15,5 @@ use Monolog\Utils;
  */
 class SynologyChatWebhookHanlder extends AbstractProcessingHandler
 {
-
+    //todo: not implemented, yet
 }
