@@ -52,7 +52,17 @@ class SynologyChatFormatter extends NormalizerFormatter {
             $fills = array_merge($record['context'], $fills);
         }
 
-        $fills['message'] = "*".Str::ucfirst($record['level_name'])." * : ".$record['message']."";
+        $message = $record['message'];
+
+        if (!is_string($message) || !is_numeric($message)) {
+            if (is_array($message)) {
+                $message = implode("; ", $message);
+            } elseif (is_object($message)) {
+                $message = "[Object] ".get_class($message);
+            }
+        }
+
+        $fills['message'] = "*".Str::ucfirst($record['level_name'])." * : ".$message."";
         $fills['payload'] = '{"text":"'.$fills['message'].'"}';
 
         return $fills;

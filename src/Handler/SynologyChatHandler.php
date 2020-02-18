@@ -65,12 +65,18 @@ class SynologyChatHandler extends AbstractProcessingHandler {
             $responseBody = json_decode((string) $clientResponse->getBody());
 
             if (!$responseBody->success) {
-                Log::info("Error ".$responseBody->error->code." connecting to SynoChat API : ".$responseBody->error->errors);
-                if (in_array($responseBody->error->code, [404, 105])) {
-                    Cache::put(
-                        "synochat_chat_handler_paused_since",
-                        date("Y-m-d H:i:s"),
-                        config("synochat.time_to_wait_before_retry_after_failed",60));
+
+                if (!is_iterable($responseBody->error->errors)) {
+                    Log::info("Error in SynoChat:");
+                    Log::info($responseBody->error);
+                } else  {
+                   Log::info("Error ".$responseBody->error->code." connecting to SynoChat API : ".$responseBody->error->errors);
+                    if (in_array($responseBody->error->code, [404, 105])) {
+                        Cache::put(
+                            "synochat_chat_handler_paused_since",
+                            date("Y-m-d H:i:s"),
+                            config("synochat.time_to_wait_before_retry_after_failed",60));
+                    }
                 }
             }
 
