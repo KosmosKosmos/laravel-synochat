@@ -1,6 +1,6 @@
 {
     "name": "kosmoskosmos/synochat",
-    "version": "0.8.2",
+    "version": "0.8.3",
     "description": "Synology Chat Support for Monolog and others",
     "type": "library",
     "require": {
