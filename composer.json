@@ -17,7 +17,7 @@
         }
     },
     "homepage": "https://github.com/kosmoskosmos/laravel-synochat",
-    "license": "MIT License",
+    "license": "MIT",
     "authors": [
         {
             "name": "Andreas Kosmowicz",
