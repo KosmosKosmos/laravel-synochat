@@ -67,8 +67,7 @@ class SynologyChatHandler extends AbstractProcessingHandler {
             if (!$responseBody->success) {
 
                 if (!is_iterable($responseBody->error->errors)) {
-                    Log::info("Error in SynoChat:");
-                    Log::info($responseBody->error);
+                    Log::info("Error in SynoChat: ".$responseBody->error->code);
                 } else  {
                    Log::info("Error ".$responseBody->error->code." connecting to SynoChat API : ".$responseBody->error->errors);
                     if (in_array($responseBody->error->code, [404, 105])) {
